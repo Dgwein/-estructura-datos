@@ -41,11 +41,14 @@ La interfaz estará disponible en `http://localhost:5173` y la API en `http://lo
 
 ## Mock funcional
 
-La pantalla inicial muestra dos módulos navegables con datos ficticios:
+La maqueta incluye estos módulos navegables, todos con datos de demostración:
 
 - **Calendario de despacho**: cambia de mes, selecciona días, usa las tarjetas para filtrar pedidos y abre cada pedido para revisar su detalle.
 - **Preparación**: avanza cada pedido de «por preparar» a «preparando» y simula el aviso de stock disponible al marcarlo listo.
 - **Historial de ventas**: revisa 12 meses de unidades, venta total, tendencia mensual y distribución por tipo de traje y talla.
+- **Clientes frecuentes**: muestra recompras, frecuencia promedio y sugerencias de beneficios; no envía campañas.
+- **Perfil de administradora**: permite editar nombre visible, teléfono, zona horaria y preferencias de aviso. El correo de Mercado Libre será de solo lectura una vez conectada la cuenta.
+- **Canales**: Mercado Libre, Amazon, TikTok Shop y «Ver todo». Por ahora solo Mercado Libre tiene datos ficticios.
 
 Las tallas de la maqueta son `0-3 Meses`, `3-6 Meses`, `6-9 Meses`, `9-12 Meses`, `12-18 Meses`, `2A`, `3A`, `4A` y `5A`.
 
@@ -53,7 +56,7 @@ El período de análisis de la demo es noviembre de 2025 a octubre de 2026. Esto
 
 ## Estado actual
 
-Por ahora la API usa `MockMercadoLibreProvider`, un conjunto de pedidos ficticios mantenido en memoria. Las acciones de cambio de estado y aviso de stock son simulaciones: no se consulta ni modifica Mercado Libre, y los cambios se reinician si se reinicia la API. La conexión en línea sustituirá este proveedor cuando se implemente.
+Por ahora la API usa `MockMercadoLibreProvider`, un conjunto de pedidos ficticios mantenido en memoria. Las acciones de cambio de estado y aviso de stock son simulaciones: no se consulta ni modifica Mercado Libre, y los cambios se reinician si se reinicia la API. La conexión en línea sustituirá este proveedor cuando se implemente. Las preferencias de perfil se guardan localmente en el navegador.
 
 ## Documentación
 
