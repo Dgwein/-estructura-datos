@@ -29,37 +29,45 @@ camiml/
 
 - Node.js 20 o superior
 - npm 10 o superior
-- Docker Desktop (opcional, para PostgreSQL local)
+- Docker Desktop (para PostgreSQL local)
 
 ## Inicio
 
 ```bash
 npm install
+```
+
+Prepara el entorno local con PostgreSQL:
+
+```bash
+cp .env.example .env
+docker compose up -d db
+```
+
+Luego inicia la interfaz y la API:
+
+```bash
 npm run dev
 ```
 
 La interfaz estará disponible en `http://localhost:5173` y la API en `http://localhost:3000`.
+La API crea la tabla `dispatch_orders` y carga pedidos de ejemplo cuando la base está vacía. Los cambios de estado se guardan en PostgreSQL y sobreviven al reinicio de la aplicación.
 
 ## Mock funcional
 
 La pantalla inicial muestra dos módulos navegables con datos ficticios:
 
-- **Calendario de despacho**: cambia de mes, selecciona días y revisa pedidos de ejemplo, tallas y estado de preparación.
+- **Calendario de despacho**: cambia de mes, selecciona días, usa las tarjetas para filtrar pedidos y abre cada pedido para revisar su detalle.
+- **Preparación**: avanza cada pedido de «por preparar» a «preparando» y luego a «listo para despacho».
 - **Historial de ventas**: revisa 12 meses de unidades, venta total, tendencia mensual y distribución por tipo de traje y talla.
+
+Las tallas de la maqueta son `0-3 Meses`, `3-6 Meses`, `6-9 Meses`, `9-12 Meses`, `12-18 Meses`, `2A`, `3A`, `4A` y `5A`.
 
 El período de análisis de la demo es noviembre de 2025 a octubre de 2026. Estos números sirven para visualizar la experiencia; se reemplazarán por datos reales al implementar la integración con Mercado Libre.
 
-Para levantar PostgreSQL local:
-
-```bash
-docker compose up -d db
-```
-
-Duplica `.env.example` como `.env` y completa las variables necesarias antes de conectar servicios externos. No guardes tokens ni credenciales en Git.
-
 ## Estado actual
 
-Este repositorio contiene la estructura inicial y contratos de dominio. La autenticación OAuth de Mercado Libre, sincronización, persistencia y vistas funcionales se implementarán en las siguientes etapas.
+La integración OAuth de Mercado Libre y la sincronización siguen pendientes. El calendario de demostración ya usa PostgreSQL para conservar los estados de los pedidos.
 
 ## Documentación
 
