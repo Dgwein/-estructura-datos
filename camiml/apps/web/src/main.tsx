@@ -60,14 +60,14 @@ function App() {
   return (
     <div className="app-frame">
       <aside className="sidebar">
-        <a className="brand" href="#inicio"><span className="brand-mark">c</span><span>camiml</span></a>
-        <div className="store-switch"><span className="store-avatar">V</span><span><b>Vestuario Norte</b><small>Tienda principal</small></span><span className="chevron">⌄</span></div>
+        <a className="brand" href="#inicio" aria-label="La Tiendita de Camille"><img className="brand-logo" src="/brand/la-tiendita-de-camille.png" alt="La Tiendita de Camille" /></a>
+        <div className="store-switch"><span className="store-avatar">ML</span><span><b>Mercado Libre</b><small>Canal de venta</small></span><span className="chevron">⌄</span></div>
         <p className="nav-label">ESPACIO DE TRABAJO</p>
         <nav aria-label="Navegación principal">
           <button className={`nav-item ${view === "calendar" ? "active" : ""}`} onClick={() => { setView("calendar"); setSelectedDay(null); }}><span className="nav-icon">▦</span>Calendario de despacho<span className="nav-count">15</span></button>
           <button className={`nav-item ${view === "sales" ? "active" : ""}`} onClick={() => setView("sales")}><span className="nav-icon">▥</span>Historial de ventas</button>
         </nav>
-        <div className="sidebar-bottom"><div className="demo-tag"><span className="demo-dot" /> MODO DEMOSTRACIÓN</div><div className="profile"><span className="profile-avatar">MG</span><span><b>María González</b><small>Administradora</small></span><span className="more">···</span></div></div>
+        <div className="sidebar-bottom"><div className="demo-tag"><span className="demo-dot" /> MODO DEMOSTRACIÓN</div><div className="profile"><span className="profile-avatar">CB</span><span><b>Catalina Benítez</b><small>Administradora</small></span><span className="more">···</span></div></div>
       </aside>
 
       <main className="main-area">
@@ -78,6 +78,7 @@ function App() {
           <section className="metrics-row" aria-label="Resumen de despachos">
             <Metric label="Pedidos por preparar" value="15" note="En los próximos 30 días" icon="▤" tone="lime" />
             <Metric label="Despachan hoy" value="2" note="Domingo, 8 de noviembre" icon="↗" tone="blue" />
+            <Metric label="Despachan mañana" value="1" note="Lunes, 9 de noviembre" icon="→" tone="orange" />
             <Metric label="Listos para despacho" value="1" note="Pendiente de recolección" icon="✓" tone="orange" />
           </section>
           <section className="calendar-layout">
