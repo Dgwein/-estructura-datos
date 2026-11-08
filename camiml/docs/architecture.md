@@ -3,16 +3,15 @@
 ## Componentes
 
 - `apps/web`: interfaz React + Vite para la operación diaria.
-- `apps/api`: API Fastify, OAuth, sincronización y reglas del negocio.
+- `apps/api`: API Fastify y proveedor de órdenes intercambiable.
 - `packages/shared`: contratos TypeScript para ventas y proyecciones.
-- PostgreSQL: persistencia de pedidos, catálogo, conexión y eventos de sincronización.
+- `MockMercadoLibreProvider`: fuente temporal en memoria para probar pedidos y estados, sin conexión real.
 
 ## Flujo principal
 
-1. La persona responsable conecta una cuenta de Mercado Libre mediante OAuth.
-2. La API obtiene pedidos y sus envíos, con sincronización periódica e incremental.
-3. Los pedidos se normalizan al modelo interno, conservando los identificadores externos.
-4. El CRM calcula tareas y fechas de preparación a partir de la venta y los datos del envío.
-5. Las proyecciones agregan ventas históricas y pedidos futuros por producto, talla y tipo.
+1. El mock entrega órdenes ficticias en el formato común del CRM.
+2. La interfaz agrupa los pedidos por fecha y estado de preparación.
+3. Marcar un pedido listo simula un aviso de stock disponible.
+4. Más adelante, un proveedor de Mercado Libre reemplazará al mock y mapeará ese flujo a los recursos y permisos disponibles para la cuenta.
 
 Las reglas de pronóstico deben ser configurables y explicar el período y los datos usados. La primera versión puede comenzar con promedios móviles y cantidades ya vendidas, dejando modelos más complejos para después.

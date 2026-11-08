@@ -4,6 +4,7 @@ import "./styles.css";
 
 type View = "calendar" | "sales";
 type OrderStatus = "to_prepare" | "preparing" | "ready";
+type StockSync = "not_sent" | "simulated" | "synced";
 type OrderFilter = "upcoming" | "to_prepare" | "today" | "tomorrow" | "ready";
 interface DispatchOrder {
   id: string;
@@ -12,6 +13,7 @@ interface DispatchOrder {
   size: string;
   dispatchDate: string;
   status: OrderStatus;
+  stockSync: StockSync;
 }
 
 const demoToday = "2026-11-08";
@@ -65,7 +67,7 @@ function App() {
         return response.json() as Promise<DispatchOrder[]>;
       })
       .then((data) => { setOrders(data); setLoadError(""); })
-      .catch(() => setLoadError("No se pudo conectar con la base de datos. Inicia PostgreSQL con `docker compose up -d db` y vuelve a cargar."))
+      .catch(() => setLoadError("No se pudo cargar la simulación de Mercado Libre. Comprueba que la API esté iniciada con `npm run dev`."))
       .finally(() => setLoadingOrders(false));
   }, []);
 
@@ -136,7 +138,7 @@ function App() {
       </aside>
 
       <main className="main-area">
-        <header className="topbar"><div className="breadcrumb">Operaciones <span>/</span> <b>{view === "calendar" ? "Calendario de despacho" : "Historial de ventas"}</b></div><div className="top-actions"><span className="sync-label"><i /> Base de datos demo</span><button className="help-button" aria-label="Ayuda">?</button></div></header>
+        <header className="topbar"><div className="breadcrumb">Operaciones <span>/</span> <b>{view === "calendar" ? "Calendario de despacho" : "Historial de ventas"}</b></div><div className="top-actions"><span className="sync-label"><i /> Simulación de Mercado Libre</span><button className="help-button" aria-label="Ayuda">?</button></div></header>
 
         {view === "calendar" ? <>
           <section className="page-heading"><div><p className="eyebrow">OPERACIÓN DIARIA</p><h1>Calendario de despacho</h1><p className="page-subtitle">Organiza los pedidos y prepara cada despacho a tiempo.</p></div><button className="primary-button" onClick={() => chooseFilter("upcoming")}><span>＋</span> Ver próximos pedidos</button></section>
@@ -160,9 +162,9 @@ function App() {
               })}</div></div>
               <div className="calendar-legend"><span><i className="legend-today" /> Hoy</span><span><i className="legend-order" /> Día con despachos</span><span className="legend-muted">Las fechas son referenciales en esta demo</span></div>
             </div>
-            <div className="panel agenda-panel"><div className="panel-header"><div><h2>{selectedDay ? `${selectedDay} de ${monthNames[shownDate.getMonth()]}` : filterTitle(orderFilter)}</h2><p>{selectedDay ? "Pedidos programados para este día" : "Selecciona un pedido para revisar o actualizar su preparación"}</p></div>{(selectedDay || orderFilter !== "upcoming") && <button className="text-button" onClick={() => { setSelectedDay(null); chooseFilter("upcoming"); }}>Ver próximos <span>→</span></button>}</div>
+            <div className="panel agenda-panel"><div className="panel-header"><div><h2>{selectedDay ? "Detalle del día" : filterTitle(orderFilter)}</h2><p>{selectedDay ? `${formatLongDate(`${monthKey}-${String(selectedDay).padStart(2, "0")}`)} · ${visibleOrders.length} ${visibleOrders.length === 1 ? "pedido" : "pedidos"}` : "Selecciona un pedido para revisar o actualizar su preparación"}</p></div>{(selectedDay || orderFilter !== "upcoming") && <button className="text-button" onClick={() => { setSelectedDay(null); chooseFilter("upcoming"); }}>Ver próximos <span>→</span></button>}</div>
               <div className="order-list">{loadingOrders ? <div className="empty-state"><span>◌</span><b>Cargando pedidos…</b><p>Leyendo datos guardados.</p></div> : visibleOrders.length ? visibleOrders.map((order) => <button className="order-row" key={order.id} onClick={() => { setSelectedOrder(order); setUpdateError(""); }}><span className="order-date"><b>{order.dispatchDate.slice(8, 10)}</b><span>{monthNames[Number(order.dispatchDate.slice(5, 7)) - 1].slice(0, 3)}</span></span><span className="order-info"><span className="order-title-line"><b>{order.buyer}</b><span className="order-id">#{order.id}</span></span><span className="order-product">{order.product}</span><span className="order-bottom"><span>Talla <b>{order.size}</b></span><span className={`order-status ${order.status}`}><i />{statusLabel[order.status]}</span></span></span><span className="order-open">›</span></button>) : <div className="empty-state"><span>▦</span><b>Sin pedidos en este grupo</b><p>Prueba otra tarjeta o selecciona otro día.</p></div>}</div>
-              <div className="agenda-footer"><span className="avatar-stack"><i>V</i><i>M</i><i>+</i></span><span>Los cambios de estado se guardan en PostgreSQL</span></div>
+              <div className="agenda-footer"><span className="avatar-stack"><i>V</i><i>M</i><i>+</i></span><span>Estados y avisos de stock simulados en memoria</span></div>
             </div>
           </section>
         </> : <>
@@ -178,7 +180,7 @@ function App() {
         <footer><span>camiml <span className="muted">· CRM para tu operación</span></span><span>Prototipo funcional · Datos de ejemplo</span></footer>
       </main>
 
-      {selectedOrder && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedOrder(null); }}><section className="order-modal" role="dialog" aria-modal="true" aria-labelledby="order-modal-title"><header className="modal-header"><div><p className="eyebrow">DETALLE DEL PEDIDO</p><h2 id="order-modal-title">#{selectedOrder.id}</h2></div><button className="modal-close" aria-label="Cerrar detalle" onClick={() => setSelectedOrder(null)}>×</button></header><div className="modal-buyer"><span className="profile-avatar">{selectedOrder.buyer.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><span><b>{selectedOrder.buyer}</b><small>Despacho: {formatLongDate(selectedOrder.dispatchDate)}</small></span></div><div className="modal-section"><span>PRODUCTO</span><b>{selectedOrder.product}</b></div><div className="modal-details"><div><span>Talla</span><b>{selectedOrder.size}</b></div><div><span>Unidades</span><b>1</b></div><div><span>Canal</span><b>Mercado Libre</b></div></div><div className="modal-status"><span>Estado de preparación</span><span className={`order-status ${selectedOrder.status}`}><i />{statusLabel[selectedOrder.status]}</span></div>{updateError && <p className="update-error" role="alert">{updateError}</p>}{selectedOrder.status === "to_prepare" ? <button className="modal-action secondary-action" disabled={savingOrder} onClick={() => updateStatus(selectedOrder, "preparing")}>{savingOrder ? "Guardando…" : "Comenzar preparación"}</button> : selectedOrder.status === "preparing" ? <button className="modal-action" disabled={savingOrder} onClick={() => updateStatus(selectedOrder, "ready")}>{savingOrder ? "Guardando…" : "Marcar como listo para despacho"}</button> : <div className="ready-confirmation"><span>✓</span> Pedido listo para despacho</div>}<p className="modal-footnote">El estado se guarda en la base de datos y se conserva al volver a abrir la maqueta.</p></section></div>}
+      {selectedOrder && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedOrder(null); }}><section className="order-modal" role="dialog" aria-modal="true" aria-labelledby="order-modal-title"><header className="modal-header"><div><p className="eyebrow">DETALLE DEL PEDIDO</p><h2 id="order-modal-title">#{selectedOrder.id}</h2></div><button className="modal-close" aria-label="Cerrar detalle" onClick={() => setSelectedOrder(null)}>×</button></header><div className="modal-buyer"><span className="profile-avatar">{selectedOrder.buyer.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><span><b>{selectedOrder.buyer}</b><small>Despacho: {formatLongDate(selectedOrder.dispatchDate)}</small></span></div><div className="modal-section"><span>PRODUCTO</span><b>{selectedOrder.product}</b></div><div className="modal-details"><div><span>Talla</span><b>{selectedOrder.size}</b></div><div><span>Unidades</span><b>1</b></div><div><span>Canal</span><b>Mercado Libre</b></div></div><div className="modal-status"><span>Estado de preparación</span><span className={`order-status ${selectedOrder.status}`}><i />{statusLabel[selectedOrder.status]}</span></div>{updateError && <p className="update-error" role="alert">{updateError}</p>}{selectedOrder.status === "to_prepare" ? <button className="modal-action secondary-action" disabled={savingOrder} onClick={() => updateStatus(selectedOrder, "preparing")}>{savingOrder ? "Guardando…" : "Comenzar preparación"}</button> : selectedOrder.status === "preparing" ? <button className="modal-action" disabled={savingOrder} onClick={() => updateStatus(selectedOrder, "ready")}>{savingOrder ? "Simulando…" : "Marcar listo + simular aviso a ML"}</button> : <div className="ready-confirmation"><span>✓</span><div>Listo para despacho<small>{selectedOrder.stockSync === "synced" ? "Stock sincronizado con Mercado Libre" : "Aviso de stock simulado; Mercado Libre aún no está conectado"}</small></div></div>}<p className="modal-footnote">La demo simula la confirmación. La conexión real deberá enviar el cambio a Mercado Libre.</p></section></div>}
     </div>
   );
 }

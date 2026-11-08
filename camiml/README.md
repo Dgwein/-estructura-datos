@@ -29,36 +29,22 @@ camiml/
 
 - Node.js 20 o superior
 - npm 10 o superior
-- Docker Desktop (para PostgreSQL local)
 
 ## Inicio
 
 ```bash
 npm install
-```
-
-Prepara el entorno local con PostgreSQL:
-
-```bash
-cp .env.example .env
-docker compose up -d db
-```
-
-Luego inicia la interfaz y la API:
-
-```bash
 npm run dev
 ```
 
 La interfaz estará disponible en `http://localhost:5173` y la API en `http://localhost:3000`.
-La API crea la tabla `dispatch_orders` y carga pedidos de ejemplo cuando la base está vacía. Los cambios de estado se guardan en PostgreSQL y sobreviven al reinicio de la aplicación.
 
 ## Mock funcional
 
 La pantalla inicial muestra dos módulos navegables con datos ficticios:
 
 - **Calendario de despacho**: cambia de mes, selecciona días, usa las tarjetas para filtrar pedidos y abre cada pedido para revisar su detalle.
-- **Preparación**: avanza cada pedido de «por preparar» a «preparando» y luego a «listo para despacho».
+- **Preparación**: avanza cada pedido de «por preparar» a «preparando» y simula el aviso de stock disponible al marcarlo listo.
 - **Historial de ventas**: revisa 12 meses de unidades, venta total, tendencia mensual y distribución por tipo de traje y talla.
 
 Las tallas de la maqueta son `0-3 Meses`, `3-6 Meses`, `6-9 Meses`, `9-12 Meses`, `12-18 Meses`, `2A`, `3A`, `4A` y `5A`.
@@ -67,7 +53,7 @@ El período de análisis de la demo es noviembre de 2025 a octubre de 2026. Esto
 
 ## Estado actual
 
-La integración OAuth de Mercado Libre y la sincronización siguen pendientes. El calendario de demostración ya usa PostgreSQL para conservar los estados de los pedidos.
+Por ahora la API usa `MockMercadoLibreProvider`, un conjunto de pedidos ficticios mantenido en memoria. Las acciones de cambio de estado y aviso de stock son simulaciones: no se consulta ni modifica Mercado Libre, y los cambios se reinician si se reinicia la API. La conexión en línea sustituirá este proveedor cuando se implemente.
 
 ## Documentación
 
