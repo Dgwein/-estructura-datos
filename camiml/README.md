@@ -40,6 +40,15 @@ npm run dev
 
 La interfaz estará disponible en `http://localhost:5173` y la API en `http://localhost:3000`.
 
+## Mock funcional
+
+La pantalla inicial muestra dos módulos navegables con datos ficticios:
+
+- **Calendario de despacho**: cambia de mes, selecciona días y revisa pedidos de ejemplo, tallas y estado de preparación.
+- **Historial de ventas**: revisa 12 meses de unidades, venta total, tendencia mensual y distribución por tipo de traje y talla.
+
+El período de análisis de la demo es noviembre de 2025 a octubre de 2026. Estos números sirven para visualizar la experiencia; se reemplazarán por datos reales al implementar la integración con Mercado Libre.
+
 Para levantar PostgreSQL local:
 
 ```bash
